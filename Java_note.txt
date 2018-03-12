@@ -764,3 +764,354 @@ class ThreadTest
 			new Thread(r).start();
 	}
 }
+=========================================================================================================
+字符串一旦被初始化就不可以被改变
+=====================================================================================================
+class StringDemo
+{
+	public static void main(String [] args)
+	{
+		String s1 = "abc";   //   这句是定义一个String变量s，jvm会先去常量字符串池中找有没有”abc”，有的话就把s指向”abc”，没有就会先在池中创建一个，再让s指向”abc”。 
+		s1 = "kk";           //   s1指向kk对象，abc对象依旧存在于内存中
+		String s2 = new String("abc");// 这句是先定义一个String变量s，然后在内存中分配新的空间”abc”再让s指向这个内存地址
+		String s3 = "abc";
+		String s4 = new String("abc");
+		/*
+		s1和s2有什么区别？
+		前者是java中标准的对象创建方式，其创建的对象将直接放置到堆中，每调用一次就会在堆上面创建一个新的对象；
+		后者则会在栈中创建一个对象引用变量str，然后查看字符串池中是否存在”XXX”，如果没有，则将”XXX”存放字符串池，并令引用变量str指向它；
+		如果已经有”XXX”，则直接令str指向它。这样充分利用了栈的数据共享优点，当然也可能是一个陷阱，对象很有可能没有创建，只不过指向一个先前已经创建的对象；而new()方法则能保证每次都指向新创建象。 
+		*/
+		//System.out.print(s1 == s2) 为假，s1和s2指向不同对象，地址不一样
+		//System.out.print(s1 == s3) 为真，s1和s3指向的是字符串池中的同一个对象
+		//System.out.print(s1.equals(s2))为真，String类中复写了Object类中的equals方法，该方法用于判断字符串是否相同
+		//System.out.println(str2 == str4);
+		
+	}
+}
+==============================================================================================
+String类适用于描述字符串事物
+该类中提供了多个方法对字符串进行操作
+常见的操作有哪些?
+
+1获取
+1.1获取字符串长度
+int length();
+
+1.2查找某个位置上的字符
+char charAt(int index)
+
+1.3获取ch字符在字符串中第一次出现的位置
+int indexOf(int ch); 没找到返回-1
+int indexOf(int ch,int fromIndex);从fromIndex位置开始查找，重载了indexOf方法
+int lastindexOf(int cha) 反向索引ch字符第一次出现的位置(从后往前找)
+
+获取str一字符串在字符串中的位置
+int indexOf(String str);
+int indexOf(String str,int fromIndex);从fromIndex位置开始查找，重载了indexOf方法
+
+2判断
+2.1字符串中是否包含某一个子串
+boolean contains(str);
+		indexOf(str)；也可以用，通过返回值是-1则不包含，否则包含。该方法既可以判断又可以获取出现的位置
+
+2.2字符串中是否有内容
+boolean isEmpty(str);//判断长度是否为0
+
+2.3字符串是否以指定内容开头
+boolean startsWith(str)；
+
+2.4字符串是否以指定内容结尾
+boolean endsWith(str);
+
+2.5忽略大小写比较
+boolean equalsIgnoreCase();
+
+3转换
+
+3.1将字符数组转换成字符串
+构造函数：String(char[])
+		  String(char[],offset,count) //offset是起始角标位，count是个数
+char [] arr = {'a','b','c','d','e','f'};
+String s = new String (arr);		  
+		 
+静态方法：static String copyValueOf(char[]);
+		  static String copyValueOf(char[],offset.count);
+		  static String valueOf(char[]);
+3.2将字符串转换成字符数组
+		  char[] tocharArray()
+		  
+3.3将字节数组转换成字符串
+          String(byte[])
+		  String(byte[],offset,count) //offset是起始角标位，count是个数
+		  
+3.4将字符串转换成字节数组
+          byte[] getBytes()//字符串和字节数组在转换过程中是可以指定编码表的
+		  
+3.5将基本数据类型转换成字符串
+static String valueOf(int)
+static String valueOf(double)
+3+""//String.valueOf(3);
+
+4.替换
+	String replace(oldchar,newchar )//replace返回的是一个新字符串，如果要替换的字符不存在，返回的还是原串
+	replace(oldstring,newstring) //替换字符串中的某一小串
+	
+5.切割
+String[] split(regex);以regex为分割标志,返回的是一个字符串数组！
+
+6.子串
+获取字符串中的一部分
+String substring(begin)
+String substring(begin,end)//包含begin角标位，不包含end角标位
+
+7.转换，去除空格，比较
+7.1 将字符串转成大写或小写
+String toUpperCase()
+String tolowerCase()
+
+7.2将字符串两端的多个空格去除
+String trim()
+
+7.3对两个字符串进行自然顺序的比较
+int compareTo(string) 
+String s1 = "abc";
+String s2 = "acc";
+s1.compareTo(s2); //正数表示s1>s2 0表示相等，负数表示小于
+java中从头到尾 一般含头不含尾，尾巴是.length
+===========================================================
+StringBuffer是字符串缓冲区	
+1.是一个容器，而且长度是可变化的
+2.可以直接操作多个数据类型
+3.最终会通过toString()方法变成字符串
+1.存储
+StringBuffer append():将指定数据作为参数添加到已有数据结尾处 append内可以是int float boolean
+StringBuffer insert(index,数据)：将数据插在index位上
+
+2.删除
+StringBuffer delete(int start,int end)()删除缓冲区中的数据包含start,不包含end
+StringBuffer deletecharAt(int index)删除指定位置的数据
+
+3.查找获取
+char charAt(int index)
+int indexOf(String str)
+int lastIndexOf(String str)
+int length()
+String substring(int start,int end)
+
+4.修改
+StringBuffer replace(int start,int end,String str)包含start不包含end的部分用字符串str替换掉
+void setChatAt(int index,char ch) 
+
+5.翻转
+StringBuffer reverse()
+
+6将缓冲区中的指定数据存储到指定字符数组中
+void getChars(int src begin,int src end ,char[] dst,int dstBegin)
+
+JDK1.5之后出现StringBulider
+StringBuffer是线程同步
+StringBuilder是线程不同步
+多线程用StringBuffer,单线程用StringBuilder
+以后开发建议使用StringBuilder
+
+JDK升级三个因素：
+提高效率
+简化书写
+提高安全性
+=======================================================================
+基本数据类型对象包装类
+int Integer
+long Long
+float Float
+double Double
+boolean Boolean
+char Charcter
+基本数据类型对象包装类的最常见作用就是用于基本数据类型和字符串之间做转换
+
+基本数据类型转成字符串
+
+基本数据类型+“”
+
+基本数据类型.toString(基本数据类型值)
+
+如：Integer.toString(34);//将34整数变成“34”
+
+字符串转成基本数据类型
+xxx a = Xxx.parseXxx(String);
+int a = Integer.parseInt("123");//必须传入数字格式的字符串,静态调用方式
+double a = Double.parseDouble("123.45")
+boolean a = Boolean.parseBoolean("true")
+Integer i = new Integer("123");
+int num = i.intValue();//动态调用方式
+
+十进制转换成其他进制
+toBinaryString(String);
+toHexString(String);
+toOctalString(String);
+
+其他进制转换成十进制
+parseInt(String s,int radix) radix是“几进制”
+
+JDK1.5版本之后出现的新特性
+Integer i = new Integer(4);
+Integer x = 4;//1.5版本之后可以这么写，x是引用数据类型，4是对象 自动装箱 //Integer x = null
+x = x /* x.intValue() */+ 2;//进行了自动拆箱，变成了int类型和2进行加法运算，
+
+Integer m = 128;
+Integer n = 128;
+(m == n)为false
+Integer a = 127;
+Integer b = 127;
+(a == b)为true
+
+因为当数值在byte范围内时，对于新特性，如果该数值已经存在则不会再开辟新的空间（byte范围：-128~127）
+======================================================================================================
+集合类
+Colletion(接口)
+
+子接口 List 包含类：ArrayList LinkedList Vector
+
+ArrayList：底层使用的是数组数据结构，特点查询速度快，但是增删慢，线程不同步，相比Vector效率更高
+		   初始容量为10，当元素个数超过10时，新建一个50%延长的数组，把原数据copy到新数组中，比Vector更节省内存空间
+			
+LinkedList：底层使用链表数据结构，特点增删速度很快，查询稍慢
+            初始容量为10，当元素个数超过10时，新建一个100%延长的数组，把原数据copy到新数组中
+
+Vector: 底层使用数组数据结构，线程同步
+		枚举是是Vector的特有取出方法，Vector和Iterator方法实现功能相同
+		Enumeration en = v.elements(); 
+		en.hasMoreElements 与 it.hasNext类似
+
+子接口 Set  包含类：Hashset TreeSet
+
+为什么会出现这么多的容器
+因为每个容器对数据的存储方式都不同，这种存储方式称为数据结构
+/*
+add方法的参数类型是obj，以便于接受任意类型对象
+集合中存储的是对象的引用（亦可称之为该对象在内存中的地址）
+*/
+import java.util.*;
+class ColletionDemo
+{
+	public static void main(String[] args)
+	{
+		ArrayList al_1 = new ArrayList();
+		
+		//增加元素
+		al_1.add("java01")；
+		al_1.add("java02")；
+		al_1.add("java03")；
+		al_2.add("java04")；
+		al_2.add("java02")；
+		al_2.add("java03")；
+
+		
+		//获取个数，集合长度
+		System.out.println(al.size());
+		
+		//删除元素
+		al.remove("java01");
+		al.claer()//清空集合
+		
+		//判断元素
+		System.out.println(al.contains("java03"));
+		System.out.println(al.isEmpty());
+		
+		//取交集
+		al_1.retainALL(al_2);
+		/保留al_1中与al_2有交集的部分
+		
+		//迭代器
+		Iterator it = al.iterator();
+		while(it.hasNext()) //如果仍有元素可以迭代，返回true
+			System.out.println(it.next()); //返回迭代的下一个元素
+			
+		for(Iterator it = al.iterator();it.hasNext();)//for循环实现方式，更节省内存空间，建立完it对象后即释放
+			System.out.println(it.next());
+		
+		//什么是迭代器：其实就是取出元素的方式
+		/*
+			集合中的内容需要取出，把取出方式定义在集合内部，
+			这样取出方式就可以直接访问集合内容的元素，取出方式被定义成了内部类
+			
+			而每一个容器的数据结构不同，取出的动作细节不一样，但都有共性内容：
+			判断和取出，将共性抽取
+			
+			这些内部类都符合一个规则，该规则是Iterator，
+			如何获取集合的取出对象呢？
+			集合通过对外提供的itreator()方法 
+		*/
+	}
+}
+======================================================================
+Colletion
+	|--List:元素有序可以重复,该集合体系有索引
+	|--Set：元素无序，不可重复
+List:
+	特有方法，凡是可以操作角标的方法都是该体系的特有方法
+	
+增：add(index,element)
+	addAll(index,Colletion)
+
+删：remove(index)
+
+改：set(index,element)
+
+查：get(index)
+	subList(from,to)(包含头不包含尾)
+	listIterator()
+
+列表迭代器：
+在迭代过程中（在遍历过程中）准备删除或添加元素
+ListIterator是Iterator的子接口
+在迭代时不可以不可以通过集合对象的方法操作集合中的元素，会发生ConcurrentModificationException
+Iterator方法只能对元素进行判断，取出，删除
+想要进行添加或修改，需用List集合的ListIterator方法进行获取
+
+ListIterator li = al.listiterator();
+		while(it.hasNext()) //如果仍有元素可以迭代，返回true
+		{
+			Object obj = li.next();
+			if (obj.equals("java 02"))
+				{
+					li.add("java 002");
+					//li.set("java 007");
+				}
+		}
+			System.out.println(it.next()); //返回迭代的下一个元素
+		
+======================================================================================================================
+linkedList
+==================================================================================================================
+import java.util.*;
+/*
+LinkedList特有方法：
+addFirst()
+addLast()
+
+getFirst()//能够获取元素，但不删除，集合为空时会抛异常
+getLast()
+
+
+removeFirst()//也能够获取元素，但是元素被删除，集合为空时会抛异常
+removeLast() 
+
+
+JDK1.6后用替代方法
+
+offerFirst()
+offerLast()
+
+peekFirst()//能够获取元素，但不删除,集合中没有元素则返回null
+peekLast()
+
+pollFirst()//能够获取元素，并且删除,集合中没有元素则返回null
+pollLast()
+
+*/
+LinkedList link = new LinkedList();
+link.add("java01");
+link.add("java02");
+link.add("java03");			
+			
