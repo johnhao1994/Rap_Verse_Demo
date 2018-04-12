@@ -1114,4 +1114,845 @@ LinkedList link = new LinkedList();
 link.add("java01");
 link.add("java02");
 link.add("java03");			
+=================================================================================================================
+练习：1.使用LinkedList实现栈和队列数据结构
+	  2.ArrayList数组去重（5种方法）
+List集合判断元素是否相同，底层的实现的是equals方法
+contains(Object obj) remove(Object obj)判断时，底层用的都是equals方法
+==================================================================
+/*
+	复写equals方法
+*/
+import java.util.*;
+class Person
+{
+	private String name;
+	private int age;
+	Person(String name,int age)
+	{
+		this.name = name ;
+		this.age = age ;
+	}
+	public String getName()
+	{
+		return name;
+	}
+	public int age()
+	{
+		return age;
+	}
+	public boolean equals(Object obj)
+	{
+		if (!(obj instanceof Person))
+			return false
+		Person p = (Person)obj;
+		return this.name.equals(p.name)&&this.age == p.age;
+	}	
+}
+class ArrayListTest
+{	public static void sop(Object obj)
+	{
+		System.out.println(obj);
+	}
+	public static void main(String[] args)
+	{
+		ArrayList al = new ArrayList();
+		al.add(new Person("lisi01",30));
+		al.add(new Person("lisi02",31));
+		al.add(new Person("lisi03",30));
+		al.add(new Person("lisi01",30));
+		/*
+		al.add("lisi01");
+		al.add("lisi02");
+		al.add("lisi03");
+		al.add("lisi01");
+		如果是这种情况的话，往ArrayList里存放的是字符串，因为有字符串池的存在，相同内容的字符串指向的是字符串池中的同一字符串，在内存中的地址是一样的
+		这时用ArrayList中的contains方法不会影响判断结果
+		*/
+		al = singleElement(al);
+		Iterator it = al.iterator();
+		while(it.hasNext())
+		{
+			Person p = (Person)it.next;  //al.add(object) 也就是说往al里存的是Object类，这里想要用子类对象的特有方法需要把父类引用进行强转
+			sop(p.getName()+"....."p.getAge()) 
+			//sop(it.next().getName()+"..."+it.next.getAge());会编译失败，因为it.next()返回的是object类的对象
+		}
+	}
+	public static singleElement(ArrayList al)
+	{
+		//定义一个临时容器
+		ArrayList newAl = new ArrayList();
+		
+		Iterator it = al.iterator();
+		while(it.hasNext())
+		{
+			Object obj = it.next();
 			
+			/*  contains的源码实现是利用了obj.equals()方法和ArrayList里的每个元素进行比较，
+				在本例中 通过把指向子类对象的父类引用obj强制转换为子类Person对象，
+				并在子类Person中复写了Object类中的equals()方法实现了特有内容的对比
+			*/
+			if(!newAl.contains(obj)) 
+				newAl.add(obj);
+		}
+		return newAl;
+	}
+}
+=====================================================================================================
+频繁增删 LinkedList
+有增删，有查改 用ArrayList
+====================================================================================================
+----Set:元素是无序（存入和取出顺序不一定一致），元素不可以重复
+	|--HashSet:底层结构是哈希表
+	HashSet是如何保证元素的唯一性呢？
+	通过元素的两个方法，hashCode和equals方法
+	如果元素的hashCode相同，才会判断equals是否为true
+	如果元素的hashCode不同，不会进行判断
+	对于判断元素是否存在以及删除等操作，底层依赖的是判断元素的hashCode()方法返回的值是否相同 和 equals方法
+	P.s hashSet取出元素只能用迭代器方法
+	|--TreeSet:
+Set集合的功能和Colletion功能是一致，没有自己特有的方法
+============================================================================================================
+import java.util.*;
+class Person
+{
+	private String name;
+	private int age;
+	Person(String name,int age)
+	{
+		this.name = name ;
+		this.age = age ;
+	}
+	public String getName()
+	{
+		return name;
+	}
+	public int age()
+	{
+		return age;
+	}
+	public boolean equals(Object obj)
+	{
+		if (!(obj instanceof Person))
+			return false
+		Person p = (Person)obj;
+		return this.name.equals(p.name)&&this.age == p.age;
+	}	
+	public int hashCode()
+	{
+		return name.hashCode()+age*20;//age*20是为了避免姓名不同，年龄相同 在进行hashCode计算时，刚好字符串返回的hash值相同的这种情况
+	}
+}
+class hashSetDemo{
+public static void main(String[] args)
+	{
+		hashSet hs = new hashSet();
+		hs.add(new Person("lisi01",30));
+		hs.add(new Person("lisi02",31));
+		hs.add(new Person("lisi03",30));
+		hs.add(new Person("lisi01",30));
+		Iterator it = hs.iterator();
+		while(it.hasNext())
+		{
+			Person p = (Person)it.next;  //al.add(object) 也就是说往al里存的是Object类，这里想要用子类对象的特有方法需要把父类引用进行强转
+			sop(p.getName()+"....."p.getAge()) 
+			//sop(it.next().getName()+"..."+it.next.getAge());会编译失败，因为it.next()返回的是object类的对象
+		}
+	}
+	public static void sop(Object obj)
+	{
+		System.out.println(obj);
+	}
+}
+======================================================================================================================
+----Set:元素是无序（存入和取出顺序不一定一致），元素不可以重复
+	|--HashSet:底层数据结构是哈希表，线程是非同步的
+			   保证元素的唯一性的原理：判断元素的hashCode()是否相同，如果相同还会继续判断元素的equals方法是否为true
+	
+	|--TreeSet:可以对set集合中的元素进行排序
+			   记住，排序时，当主要条件相同时，一定要记得比较一下次要条件
+			   底层数据结构是二叉树，保证元素的唯一性的依据是compareTo()方法return的值——0表示相同，1 -1表示不同
+			   
+			   TreeSet排序的第一种方式是：让元素自身具备比较性，元素需要implements Comparable接口，复写compareTo()方法
+			   这种方式称为元素的自然顺序，或者叫做默认顺序
+			   
+			   TreeSet排序的第二种方式是：当元素自身不具备比较性，或者具备的比较性不是所需要的
+			   这时就需要让集合自身具备比较性
+			   在集合初始化时就具备比较性
+			   
+			   P.s当两种排序都具备时，以比较器为主
+===========================================================================================================================
+//按年龄大小对Person对象进行排序
+import java.util.*;
+class Person implements Comparable//该接口强制让学生具备比较性
+{
+	private String name;
+	private int age;
+	Person(String name,int age)
+	{
+		this.name = name ;
+		this.age = age ;
+	}
+	public String getName()
+	{
+		return name;
+	}
+	public int age()
+	{
+		return age;
+	}
+	public boolean equals(Object obj)
+	{
+		if (!(obj instanceof Person))
+			return false;
+		Person p = (Person)obj;
+		return this.name.equals(p.name)&&this.age == p.age;
+	}	
+	public int hashCode()
+	{
+		return name.hashCode()+age*20;//age*20是为了避免姓名不同，年龄相同 在进行hashCode计算时，刚好字符串返回的hash值相同的这种情况
+	}
+	public int compareTo(Object obj)
+	{
+		if (!(obj instanceof Person))
+			throw new RuntimeException("不是学生对象");
+		Person p = (Person)obj;
+		if (this.age>s.age)
+			return 1;
+		if (this.age == s.age)
+			return this.name.compareTo(s.name);
+		return -1;
+	}
+}
+class hashSetDemo{
+public static void main(String[] args)
+	{
+		TreeSet ts = new TreeSet();
+		ts.add(new Person("lisi01",30));
+		ts.add(new Person("lisi02",31));
+		ts.add(new Person("lisi03",30));
+		ts.add(new Person("lisi01",30));
+		Iterator it = hs.iterator();
+		while(it.hasNext())
+		{
+			Person p = (Person)it.next;  //al.add(object) 也就是说往al里存的是Object类，这里想要用子类对象的特有方法需要把父类引用进行强转
+			sop(p.getName()+"....."p.getAge()) ;
+			//sop(it.next().getName()+"..."+it.next.getAge());会编译失败，因为it.next()返回的是object类的对象
+		}
+	}
+	public static void sop(Object obj)
+	{
+		System.out.println(obj);
+	}
+}
+=========================================================================================================================================
+当元素自身不具备比较性，通过比较器这种方式，将比较器作为参数传递给TreeSet集合的构造函数
+===================================================================================================================
+/*
+定义一个类，实现Comparator接口，复写compare()方法
+让Person对象按姓名进行排序
+*/
+import java.util.*;
+class Person implements Comparable//该接口强制让学生具备比较性
+{
+	private String name;
+	private int age;
+	Person(String name,int age)
+	{
+		this.name = name ;
+		this.age = age ;
+	}
+	public String getName()
+	{
+		return name;
+	}
+	public int getAge()
+	{
+		return age;
+	}
+	public boolean equals(Object obj)
+	{
+		if (!(obj instanceof Person))
+			return false;
+		Person p = (Person)obj;
+		return this.name.equals(p.name)&&this.age == p.age;
+	}	
+	public int hashCode()
+	{
+		return name.hashCode()+age*20;//age*20是为了避免姓名不同，年龄相同 在进行hashCode计算时，刚好字符串返回的hash值相同的这种情况
+	}
+	public int compareTo(Object obj)
+	{
+		if (!(obj instanceof Person))
+			throw new RuntimeException("不是学生对象");
+		Person p = (Person)obj;
+		if (this.age>s.age)
+			return 1;
+		if (this.age == s.age)
+			return this.name.compareTo(s.name);
+		return -1;
+	}
+}
+class TreeSet_Comparator_Demo
+{
+	public static void main(String[] args)
+	{
+		TreeSet ts = new TreeSet(new MyCompare());
+		ts.add(new Person("lisi01",30));
+		ts.add(new Person("lisi02",31));
+		ts.add(new Person("lisi03",30));
+		ts.add(new Person("lisi01",30));
+		Iterator it = ts.iterator();
+		while(it.hasNext())
+		{
+			Person p = (Person)it.next;  //al.add(object) 也就是说往al里存的是Object类，这里想要用子类对象的特有方法需要把父类引用进行强转
+			sop(p.getName()+"....."p.getAge()) 
+			//sop(it.next().getName()+"..."+it.next.getAge());会编译失败，因为it.next()返回的是object类的对象
+		}
+	}
+	public static void sop(Object obj)
+	{
+		System.out.println(obj);
+	}
+}
+class MyCompare implements Comparator
+{
+	public int compare(Object o1,Object o2)
+	{
+		Person s1 = (Person)o1;
+		Person s2 = (Person)o1;
+		int num = s1.getName().compareTo(s2.getName());
+		if(num == 0)
+			{	
+				/*
+				if(s1.getAge()>s2.getAge)
+					return 1;
+				if(s1.getAge() == s2.getAge)
+					return 0;
+				return -1;
+				*/
+				//return new Integer(s1.getAge().compareTo(new Integer(s2.getAge())));
+				return s1.getAge()-s2.getAge();
+			}
+	}
+}
+======================================================================================================
+集合框架：泛型概述
+JDK1.5之后出现的新特性，用于解决安全问题
+
+往ArrayList里存放的只能是String 类型的元素，如果不是，编译无法通过，
+对ArrayList里存放的东西进行了客观的约束
+ArrayList<String> al = new ArrayList<String>();
+
+其实<>就是用来接收数据类型的
+当使用集合时，将集合中要存储的数据类型作为参数传递到其中即可
+
+注意hashSet中hashCode()方法里的equals方法一定要用强转，没法使用泛型
+==========================================================================================
+泛型类：
+当类中要操作的引用数据类型不确定时，早期定义Object来完成扩展，现在定义泛型来完成扩展
+class Student
+{}
+class Worker
+{}
+class Util<QQ>
+{
+	private QQ q;
+	public void setObject(QQ q)
+	{
+		this.q = q;
+		
+	}
+	public QQ getObject()
+	{
+		return q;
+	}
+}
+class GenericDemo
+{
+	public static void main(String[] args)
+	{
+		Util<Worker>u = new Util<Worker>();
+		u.setObject(new Worker());
+		Worker w = u.getObject();
+	}
+}
+============================================================================================
+泛型类定义的泛型，在整个类中有效，如果被方法使用
+那么泛型类对象明确要操作的具体类型后，所有要操作的类型就已经固定
+
+为了让不同方法可以操作不同类型，而且类型还不确定
+特殊之处：
+静态方法不可以访问类上定义的泛型
+如果静态方法操作的引用数据类型不确定，可以将泛型定义在静态方法上
+====================================================================
+class Demo<T>
+{
+	public  void show(T t)
+	{
+		System.out.println("show:"+t);
+	}
+	public <Q> void print(Q q)
+	{
+		System.out.println("print:"+t);
+	}
+}
+class GenericDemo
+{
+	public static void main(String[] args)
+	{
+		Demo d = new Demo();
+		d.show("hah");
+		d.show(4);
+		d.print("as")
+	}
+}
+==========================================
+泛型定义在接口上
+=========================================
+interface Inter<T>
+{	
+	void show(T t);
+}
+/*
+class InterImpl implements Inter<String>
+{
+	public void show(String t)
+	{
+		System.out.println(t);
+	}
+}
+*/
+class InterImpl<T> implements Inter<T>
+{
+	public void show(T t)
+	{
+		System.out.println(t);
+	}
+}
+class GenericDemo
+{
+	public static void main(String[] args)
+	{
+		InterImpl<Integer> i = new InterImpl<Integer>();
+		i.show(4);
+	}
+} 
+===================================================================
+?通配符 也可以理解为占位符
+? extends E:可以接受E类型或者E类型的子类
+? super E :可以接受E类型或者E类型的父类
+===============================================
+class GenericDemo
+{
+	public static void main(String[] args)
+	{
+		ArrayList<String>a1 = new ArrayList<String>;
+		a1.add("abc1");
+		a1.add("abc2");
+		a1.add("abc3");
+		ArrayList<Integer>a2 = new ArrayList<Integer>;
+		a2.add(1);
+		a2.add(2);
+		a2.add(3);
+		printcoll();
+	}
+	public static void printcoll(ArrayList<?> al)//public static <T> void printcoll(ArrayList<T> al)
+	{
+		Iterator<?>it = al.iterator();//Iterator<T>it = al.iterator();
+		while(it.hasNext())
+			{
+				System.out.println(it.next());// T t = it.next();Syetem.out.println(t);
+			}
+	}
+}
+======================================================================
+/*泛型限定：? extends E:可以接受E类型或者E类型的子类,上限
+			? super E :可以接受E类型或者E类型的父类，下限
+*/
+class Person
+{
+	private String name;
+	Person(String name)
+	{
+		this.name = name;
+	}
+	public String getName()
+	{
+		return name;
+	}
+}
+class Student extends Person
+{
+	Student(String name)
+	{
+		super(name);
+	}
+}
+class GenericDemo
+{
+	public static void main(String[] args)
+	{
+		ArrayList<Person>a1 = new ArrayList<Person>;
+		a1.add(new Person("abc1"));
+		a1.add(new Person("abc2"));
+		a1.add(new Person("abc3"));
+		
+		ArrayList<Student>a2 = new ArrayList<Student>;
+		a2.add(new Student("abc11"));
+		a2.add(new Student("abc12"));
+		a2.add(new Student("abc13"));
+		printcoll();
+		
+		printcoll(a1);
+	}
+	public static void printcoll(ArrayList<? extends Person> al)//public static <T> void printcoll(ArrayList<T> al)
+	{
+		Iterator<? extends Person>it = al.iterator();
+			{
+				System.out.println(it.next().getName());
+			}
+	}
+}
+=================================================================================================================
+Map集合：
+该集合存储键值对，一对一对往里存，而且要保证键值的唯一性
+Map<K,V > K V指的是类
+1.增
+put(K key,V value); 添加元素时，如果出现添加相同的键那么后添加的值会覆盖原有键对应值，并put方法返回被覆盖的那个值
+putaLL(Map<? extends K, ? extends V >m);
+2.删
+claer()
+3.判断
+boolean containsKey(Object value)
+boolean containsValue(Object key)
+isEmpty()
+remove(Object Key)
+4.获取
+get(Object key) //通过get方法返回值判断一个键是否存在，通过返回null或者数字1 来判断
+map.size() //返回map的长度
+map.values() //返回map中所有的value
+keySet()
+
+entrySet()
+keySet()
+
+Map-------
+	|------Hashtabale:底层是哈希表数据结构，不可存入null值，null键，该集合线程同步
+	|------HashMap：  底层是哈希表数据结构，可存入null值，null键，该集合是不同步
+	|------TreeMap：  底层是二叉树数据结构，线程不同步，可用于给Map集合中的键进行排序
+其实Set底层用了Map集合
+	
+keySet()：将map中所有的键存入到Set集合中，因为set具备迭代器，以迭代器的方法取出所有的键，再根据get方法获取每一个键对应的值
+Map<String,String> map = new HashMap<String,String>();
+map.put("01","zhangsan");
+map.put("02","zhangsan2");
+map.put("03","zhangsan3");
+Set<String> keySet = map.keySet();
+Iterator<String> it = keySet.iterator();
+while(it.hasNext())
+{
+	String key = it.next();
+	String value = map.get(key);
+	System,out.println("key:"+key+"value"+value);
+}
+	
+===========================================================================
+entrySet():
+Set <Map.Entry<k,v>> entrySet:将map集合中的映射关系存入到set集合中
+							  而这个关系的数据类型就是Map.Entry
+							  
+Map<String,String> map = new HashMap<String,String>();
+map.put("01","zhangsan");
+map.put("02","zhangsan2");
+map.put("03","zhangsan3");
+Set<Map.Entry<String,String>> entrySet = map.entrySet();
+
+Iterator<Map.Entry<String,String>> it = entrySet.iterator();
+
+while(it.hasNext())
+{
+	Map.Entry<String,String> me = it.next();
+	String key = me.getKey();
+	String value = me.getValue();
+	System.out.println(key+":"+value);
+	
+}
+===============================================================================================================
+新建一个学生类，要复写hashCode()方法,equals方法，并且让其具备可比性（implements comparable），以保证存入hashSet，TreeSet,hashMap,TreeMap容器时无误
+=================================================================================================================
+/*
+获取一个字符串中字母出现次数，“asasd”
+希望打印结果：a(2) s(2)
+
+字母和次数之间有映射关系，考虑使用map集合，map集合中存放的就是映射关系
+*/
+import java.util.*;
+class MapTest
+{
+	public static void main(String[] args)
+	{
+		String str = "asaddasd";
+		System.out.prinln(charCount(str));
+	}
+	public static String charCount(String str)//工具类用静态方法较好，外部类可以直接通过类名调用
+	{
+		char[] chs = str.tocharArray();
+		TreeMap<Charcter,Integer> tm = new TreeMap<Charcter,Integer>();
+		for(int i = 0;i<str.length;i++)
+			{	int count = 0;
+				Integer value = tm.get(chs[i]);
+				if(tm.get(value != null)
+					count = value;
+				count++;
+				tm.put(chs[i],count);
+			}
+			StringBuilder sb = new StringBuilder();
+			
+			Set<Map.Entry<String,Integer>> entrySet = tm.entrySet();
+
+			Iterator<Map.Entry<String,Ingeger>> it = entrySet.iterator();
+
+		while(it.hasNext())
+		{
+			Map.Entry<String,Integer> me = it.next();
+			String key = me.getKey();
+			Integer value = me.getValue();
+			sb.append(key+"("+value+")");
+	
+		}
+		return sb.toString();
+	}
+}
+=========================================================================================
+map扩展知识：
+============================================================
+集合框架工具类：
+
+Colletions.sort(List list)
+Colletion.sort(List list,comparator c)//按照comparator的规则对List进行比较
+Colletions.max(List list)
+Colletions.max(List list,comparator c)
+Colletions.binarySearch(List list)//有则返回角标，没有则返回-(插入点-1)
+Colletions.fill(List list , Object obj) 将list集合中的所有元素替换成指定元素
+Colletions.replaceAll(List list,Object obj1,Object obj2)将list集合中所有的obj1元素替换成obj2元素
+Colletion.reverseOrder() 返回的是一个按照自然顺序逆序的比较器，也可以将现有的比较器变成逆序并返回
+Colletions.synchronizedList(List list)将list变成线程同步即多线程安全的
+Colletions.swap(List,int index1,int index2)交换 index1和index2角标位的元素
+Colletions.shuffle(List,list)将list集合按随机顺序重新排放
+Arrays.asList(arr[])  把数组变成集合，用集合的思想和方法操作数组中的元素，将数组变成集合，不可以使用增删方法，因为数组的长度是固定的
+注意： 如果数组中的元素都是对象，那么变成集合时，数组中的元素直接变成集合中的元素
+	   如果数组中的元素是基本数据类型，那么变成集合时，会将该数组本身作为集合中元素的存在
+将集合转数组：
+ArrayList<String> a1 = new ArrayList<String>();
+a1.add("abc1");
+a1.add("abc2");
+a1.add("abc3");
+String[] arr = a1.toArray(new String[a1.size()]);
+//.toArray(<T[] a>) 返回T类型的数组
+//当指定类型的数组长度小于集合的size,那么该方法内部会创建一个长度为集合的size的数组
+//当指定类型的数组长度大于集合的size,那么就不会新建数组，而是使用传进的这个数组
+
+为什么要将集合变成数组？
+为了限定对元素的操作
+=====================================================================
+增强for循环
+for(数据类型 变量名：被遍历的集合或者元素)
+{}
+
+ArrayList<String> a1 = new ArrayList<String>();
+al.add("abc1");
+al.add("abc2");
+al.add("abc3");
+
+for(String s : al)
+{}
+
+增强for循环只能获取集合元素，但不能对集合元素进行操作
+
+迭代器除了遍历，还可以进行remove集合中元素的动作，如果使用ListIterator还可以在遍历时对集合进行增删改查
+
+传统for循环和高级for循环
+高级for循环必须有一个遍历的目标 
+=======================================================
+JDK1.5之后可变参数
+public static void show (int... arr){
+}
+其实就是public static void show(int[] arr){
+}的简写形式瞒不过不需要每一次都建立一个数组对象，只要将要操作的元素作为参数传递，隐式的将这些参数封装成了数组
+
+使用时注意：可变参数一定要定义在参数列表的最后一个
+================================================================
+静态导入：
+import static pack.类名* 导入该包中某个类里所有的静态成员
+
+System类中的方法都是静态的
+
+Runtime对象
+该类并没有提供构造函数，不可以new对象，会直接想到该类中的方法都是静态的 
+发现该类中还有非静态的方法
+说明该类肯定会提供了方法获取本类对象，而且该方法是静态的，返回值类型是本类类型
+使用了单例设计模式：保证了对象的唯一性
+该方法是Static Runtime getRuntime()
+
+Runtime r = Runtime.getRuntime();
+Process p = r.exec("notepad.exe");
+Thread.sleep(4000);//让该线程休眠4秒
+p.destroy();//杀死该进程
+
+Date类//text包里
+Date d = new Date();
+//将模式封装到SimpleDateFormat中
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日")；
+//调用format方法，让模式格式化指定Date对象
+sdf.format(d);
+
+Calendar类//util包里
+Calendar c = Calendar.getInstance()
+c.get(Calendar.YEAR)
+c.get(Calendar.MONTH)
+c.get(Calendar.DEY_OF_MONTH)
+c.get(Calendar.DEY_OF_WEEK
+c.set(yyyy,m,dd)将日历的指定字段设置为给定的值
+c.add(Calendar.YEAR,4)当前年份+4
+
+Math类 lang包
+double d = Math.ceil(a) //大于指定数据的最小整数
+double d1 = Math.floor(a) //小于指定数据的最大整数
+long l = Math.round(a) //四舍五入
+double d2 = Math.pow(a,b) a^b
+int d = (int)(Math.random()*10+1)  //产生一个1-10之间的随机数
+
+util包里也有随机数生成器
+Random r = new Random(); 
+r.nextInt(10)+1;返回1到10的随机数
+
+====================================================================================
+IO流
+字节流
+InputStream OutputStream
+
+字符流
+Reader Writer
+
+需求：在硬盘上创建一个文件，并写入文字数据
+import java.io.*;
+class FileWriterDemo
+{
+	public static void main(String [] args) throws IOException
+	{	//创建一个FileWriter对象，该对象一旦被初始化就必须要明确备操作的文件
+		//而且该文件会被创建到指定目录下，如果该目录下已有同名文件，则会被覆盖
+		
+		
+		FileWriter fw = new FileWriter("demo.txt");
+		//调用write方法，将数据写入到流中
+		fw.write("abcde");
+		//刷新该流对象中缓冲中的数据，将数据刷到目的地
+		fw.flush();
+		//fw.close();方法关闭流资源，关闭前会刷新一次内部缓冲中的数据，将数据刷到目的地
+		//flush刷新后可以继续使用，close刷新后会关闭流
+	}
+	
+}
+/////////////////////////////////////////////////////////////////////////////////////
+IO异常处理方式
+import java.io.*;
+class FileWriterDemo
+{
+	public static void main(String [] args) 
+	{	
+		FileWriter fw = null；
+		
+		try
+		{
+			fw = new FileWriter("demo.txt");
+			//fw = new FileWriter("demo.txt",true);加上true这个标志位表示不覆盖原文件，在原文件的后面继续写
+			fw.write("abc/r/nde");//在windows系统中用/r/n两个转义字符表示换行
+		}
+		catch(IOException e)
+		{
+			System.out.println(e.toString());
+		}
+		finally
+		{
+			try
+			{
+				if (fw != null)
+					fw.close();
+			}
+			catch(IOException e)
+			{	
+				Syste,.out.println(e.toString());
+			}
+		}
+	}
+}
+//int ch = fw.read()一次读一个字符，会自动往下读读完一个文件时会返回-1
+//返回的一个整数，可以用(char)ch将该整数还原会字符
+//第二种read方法返回读到的字符个数
+char[] buf = new char[1024];
+int num = fr.read(buf);//返回读到的字符个数，并将读到的内容存在指定的buf字符数组中
+//若文件中的字符数比buf多，一次那就只能读buf数组大小的个数，后面继续读到的如果仍放在buf会把原来存放的内容从头覆盖
+//buf的大小一般都定义1024的整数倍，一个字符占两个字节
+char[] buf = new char[1024];
+int num = 0;
+while(num = fr.read(buf)!= -1)
+{
+	System.out.print(new String (buf,0,num)); 
+}
+
+
+需求：拷贝文件
+
+import java.io.*;
+class CopyDemo
+{
+	public static void main(String [] args) 
+	{	
+		copy_2();
+	}
+	public static void copy_2()
+	{
+			FileWriter fw = null；
+			FileReader fr - null;
+		
+		try
+		{
+			fw = new FileWriter("des");
+			fr = new FileReader("source");
+			char buf = new char[1024];
+			int num = 0;
+			while(num = fr.read(buf)!= -1)
+			{
+				fw.write(buf,0,num);
+			}
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException
+		}
+		finally
+		{
+			try
+			{
+				if (fr != null)
+					fr.close();
+			}
+			catch(IOException e)
+			{	
+				Syste,.out.println(e.toString());
+			}
+			finally{
+				try
+			{
+				if (fw != null)
+					fw.close();
+			}
+			catch(IOException e)
+			{	
+				Syste,.out.println(e.toString());
+			}
+			}
+		}
+	}
+}
