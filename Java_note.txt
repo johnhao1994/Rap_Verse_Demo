@@ -1956,3 +1956,71 @@ class CopyDemo
 		}
 	}
 }
+///////////////////////////////////////////////////////////////////
+字符流的缓冲区
+缓冲区的出现是为了提高流的操作效率而出现的，在创建缓冲区之前必须现有流对象
+FileWriter fw = new FileWriter("demo.txt");
+BufferedWriter buffw = new BufferedWriter(fw);
+buffw.write("abcde");
+buffw.flush();
+buffw.close();//只要关闭缓冲区就是关闭流
+buffw.newLine();//可以换行，跨平台
+//记住只要用到缓冲区，就要记得刷新
+BufferedReader使用类似
+BufferedReader bufr = new BufferedReader("demo.txt");
+bufr.readLine()//按行读。一次读一行，当返回空时表示读到文件末尾
+readLine()方法返回的时候只返回回车符之前的内容，并不返回回车符
+
+import java.io.*;
+class CopyDemo
+{
+	public static void main(String [] args) 
+	{	
+		copy_2();
+	}
+	public static void copy_2()
+	{
+			BufferedWriter bufw = null；
+			BufferedReader bufr = null;
+		
+		try
+		{
+			bufw = new BufferedWriter(new FileWriter("demo.java"));
+			bufr = new BufferedReader(new FileReader("demo_copy.txt"));
+			String line = null;
+			while(line = bufr.readLine()!= null)
+			{
+				bufw.write(line);
+				bufw.newLine();
+				bufw.flush();
+			}
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException
+		}
+		finally
+		{
+			try
+			{
+				if (bufr != null)
+					bufr.close();
+			}
+			catch(IOException e)
+			{	
+				Syste,.out.println(e.toString());
+			}
+			finally{
+				try
+			{
+				if (bufw != null)
+					bufw.close();
+			}
+			catch(IOException e)
+			{	
+				Syste,.out.println(e.toString());
+			}
+			}
+		}
+	}
+}
