@@ -1882,14 +1882,16 @@ class FileWriterDemo
 			}
 			catch(IOException e)
 			{	
-				Syste,.out.println(e.toString());
+				System.out.println(e.toString());
 			}
 		}
 	}
 }
-//int ch = fw.read()一次读一个字符，会自动往下读读完一个文件时会返回-1
-//返回的一个整数，可以用(char)ch将该整数还原会字符
-//第二种read方法返回读到的字符个数
+//第一种read方法，int ch = fw.read()一次只能读一个字符，读完一个会自动往下读下一个字符，
+  读完完一个文件时会返回-1
+  
+//返回的一个整数，可以用(char)ch将该整数还原会字符,System.out.println("ch="+(char)ch)用循环体返回多次
+//第二种read方法返回读到的字符个数 
 char[] buf = new char[1024];
 int num = fr.read(buf);//返回读到的字符个数，并将读到的内容存在指定的buf字符数组中
 //若文件中的字符数比buf多，一次那就只能读buf数组大小的个数，后面继续读到的如果仍放在buf会把原来存放的内容从头覆盖
@@ -2024,3 +2026,237 @@ class CopyDemo
 		}
 	}
 }
+======================================================================
+装饰设计模式：
+当想要对已有的对象进行功能增强时，
+可以定义类，并将已有的对象传入，基于已有的功能，并提供加强功能
+
+装饰类会通过构造方法接受被装饰的对象，并基于被装饰的对象的功能，提供更强的功能
+
+装饰与继承：
+装饰模式比继承要灵活，避免了继承体系的臃肿，而且降低了类与类间的关系
+装饰类因为增强已有对象，具备的功能和已有的是相同的，只不过提供了更强的功能，所以装饰类和被装饰类通常属于一个体系
+
+=====================================================================================
+字节流：
+需求：想要操作多媒体数据，需要用到字节流
+InputStream OutputStream
+FileOutputStream fos = new FileOutputStream("demo.txt");
+fos.write("abcde",getBytes());
+fos.close();//必须关闭资源
+byte[] buf  = new byte[fis.available];//这种方法慎用，如果数据太大会导致内存溢出，最好还是开辟1024整数倍的空间
+fis.read(buf);
+//字节流缓冲区,复制mp3
+
+class CopyMp3{
+	public static void copy_1() throws IOException
+{
+	BufferedInputStream bufis = new BufferedInputStream(new FileInputStream("c:\\0.mp3"));
+	BufferedOnputStream bufos = new BufferedOutputStream(new FileOutputStream("c:\\1.mp3"));
+	int by = 0;
+	while((by = bufis.read())!= -1)
+	{
+		bufos.write(by);
+	}
+	bufis.close();
+	bufos.close();
+}
+public static void main(String [] args){
+	long start = System.currentTimeMillis();
+	copy_1();
+	long end = System.currentTimeMillis();
+	System.out.println(end-start);
+}
+================================================================================================
+//自己写一个BufferedInputStream
+class MybufferedInputStream{
+	private InputStream in;
+	
+	private byte[] buf = new byte[1024];
+	
+	private count = 0,pos = 0;
+	
+	MyBufferedInputStream(InputStream in){
+	this.in = in;}
+	//一次读一个字节
+	public int myRead()throws IOException
+	{	if(count == 0){ 
+		count = in.read(buf);
+		pos = 0; 
+		byte b = buf[pos];
+		count--;
+		pos++;
+		return b&255;
+		}
+		else if(count > 0)
+		{
+			pos = 0; 
+			byte b = buf[pos];
+			count--;
+			pos++;
+			return b&255;
+			//如果存在硬盘中的数据是连续二进制8个1,在计算机中会被认为是-1,将b升级成为int类型后只取末尾8位便可解决
+		}
+		if(count<0)
+		{return -1;}
+		return -1;
+	}
+	public void my close()
+	{
+	in.close();
+	}
+}
+public static void main(String [] args){
+	long start = System.currentTimeMillis();
+	copy_1();
+	long end = System.currentTimeMillis();
+	System.out.println(end-start);
+}
+public static void copy_1() throws IOException
+{
+	MyBufferedInputStream bufis = new BufferedInputStream(new FileInputStream("c:\\0.mp3"));
+	MyBufferedOnputStream bufos = new BufferedOutputStream(new FileOutputStream("c:\\1.mp3"));
+	int by = 0;
+	while((by = bufis.MyRead())!= -1)
+	{
+		bufos.write(by);//在调用write函数时，实际是将int类型强转为byte类型
+	}
+	bufos.close();
+	bufis.myclose();
+}
+===============================================================================================
+记录键盘录入：
+//字节流转换成字符流InputStreamReader
+	
+import java.io.*;
+class Readin
+{
+	public static void main(String [] args)
+	{
+		InputStream in = System.in;
+		InputStreamReader isr = new InputStreamReader(in);
+		BufferedReader bufr = new BufferedReader(isr);
+		String line = null;
+		while((line = buff.readLine())!= null)
+		{
+			System.out.println(line);
+			
+		}
+		bufr.close();
+	}
+}
+=================================================================
+/*
+转换流：
+源：键盘录入
+目的地：控制台
+键盘录入（字节流）→转换流链接到这个字节流(这个转换流本身是字符流)→用缓冲流读取这个转换流，并用读缓冲流中的方法操作数据
+把读缓冲流中的数据用line临时存储，写缓冲流的方法将line写到转换流中→转换流连接到输出流→最后以字节流的方式在控制台输出
+*/
+BufferedReader bufr = new BufferedReader(new InputStreamReader(System.in));//不一定是System.in，可以是任意字节流
+BufferedWriter bufw = new BufferedWriter(new OnputStreamWriter(System.out));
+String line = null;
+while((line=bufr.readLine())!= null)
+{
+	bufw.write(Line.toUpperCase());
+	bufw.newLine();
+}
+===========================================================================
+IO流操作规律：
+1.明确源和目的
+源：输入流
+	InputStream Reader
+目的：输出流
+	OutputStream Writer
+	
+2.明确操作的数据是否是纯文本
+是：字符流
+不是：字节流
+
+3.当体系明确后，再确定要使用的具体对象
+通过设备进行区分：
+源设备：内存，硬盘，键盘
+目的设备：内存，硬盘，控制台
+
+是否需要提高效率：是加入Reader体系缓冲区 BufferedReader
+
+1.将一个文本文件中的数据存储到另一个文件-复制文件
+源：Inputstream Reader
+	因为是文本文件，这时选择字符流即Reader
+	FileReader fr = new FileReader("a.txt");
+	BufferedReader bufr = new BufferedReader(fr);
+	接下来明确要使用该体系的哪个对象
+	明确设备：硬盘
+	Reader体系中可以操作文件的对象是FileReader
+	
+目的：OutputStream Writer
+	纯文本：Writer
+	设备：硬盘 FileReader
+	
+	FileWriter fw = new FileWriter("b.txt");
+	BufferedWriter bufw = new BufferedWriter(fw);
+	
+	
+2.需求：将键盘录入的数据保存到一个文件中
+源：InputStream Reader
+是纯文本 Reader
+设备：键盘，对应的对象是System.in(是字节流)
+为了操作键盘的文本数据方便，转换成字符流按照字符串的操作是最好的
+用到Reader体系中的InputStreamReader
+InputStreamReader isr = new InputStreamReader(System.in);
+需要提高效率吗？
+需要：BufferedReader
+BufferedReader bufr = new BufferedReader(isr);
+
+目的：OutputStream Writer
+是纯文本，Writer
+设备：硬盘，一个文件，使用FileWriter
+需要提高效率吗？
+需要，BufferedWrite bufw = new BufferedWriter(fw);
+
+扩展：想要把录入的数据按照指定的编码表，将数据存到文件中
+目的：OutputStream Writer
+是纯文本，Writer
+但是存储时，需要加入指定的编码表，而指定的编码表只有转换流才可以指定
+
+而该转换流对象要接受一个字节输出流，而且还可以操作指定的字节输出流，FileOutputStream
+
+
+
+
+OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("d.txt"),"UTF-8");
+
+需要高效吗？
+需要， BufferedWriter bufw = new BufferedWriter(osw);
+
+通常涉及到字符编码转换时，要用到转换流
+
+//P.s FileReader使用的编码表是指定的GBK,非GBK编码无法读取，想要读取UTF-8编码的文本文件时
+
+//P.s System.in System.out 可以通过System.setIn()和Syetem.setOut()函数改变默认的键盘输入和控制台输出
+=============================================================================
+异常日志信息和系统信息
+import java.util.*
+try
+{
+
+}
+catch(Exception e)
+{
+	try
+	{	
+		Date d = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+		PrintStream ps = new PrintStream("exception.log");
+		ps.println(d.toString());
+		System.setOut(new PrintStream("exception.log"))
+	}
+	catch(IOException ex)
+	{
+		throw new RuntimeException("日志文件创建失败")；
+	}
+	e.printStackTrace(System.out);
+}
+
+Properities prop = System.getProperties();
+prop.list(new PrintStream("sysinfo.txt"));
