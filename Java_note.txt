@@ -1865,9 +1865,9 @@ class FileWriterDemo
 		
 		try
 		{
+			fw.write("abc/r/nde");//在windows系统中用/r/n两个转义字符表示换行
 			fw = new FileWriter("demo.txt");
 			//fw = new FileWriter("demo.txt",true);加上true这个标志位表示不覆盖原文件，在原文件的后面继续写
-			fw.write("abc/r/nde");//在windows系统中用/r/n两个转义字符表示换行
 		}
 		catch(IOException e)
 		{
@@ -1898,7 +1898,7 @@ int num = fr.read(buf);//返回读到的字符个数，并将读到的内容存�
 //buf的大小一般都定义1024的整数倍，一个字符占两个字节
 char[] buf = new char[1024];
 int num = 0;
-while(num = fr.read(buf)!= -1)
+while((num = fr.read(buf))!= -1)
 {
 	System.out.print(new String (buf,0,num)); 
 }
@@ -2042,6 +2042,7 @@ class CopyDemo
 需求：想要操作多媒体数据，需要用到字节流
 InputStream OutputStream
 FileOutputStream fos = new FileOutputStream("demo.txt");
+FileInputStream fis = new FileInputStream("")'
 fos.write("abcde",getBytes());
 fos.close();//必须关闭资源
 byte[] buf  = new byte[fis.available];//这种方法慎用，如果数据太大会导致内存溢出，最好还是开辟1024整数倍的空间
@@ -2260,3 +2261,260 @@ catch(Exception e)
 
 Properities prop = System.getProperties();
 prop.list(new PrintStream("sysinfo.txt"));
+
+
+File
+renameTo()
+File [] files = File.listRoots();//获取机器的盘符
+for(File f :files)
+{
+	System.out.println(f)
+}
+File f = new File("c:\\")
+String [] arr =f.list()；//列出当前路径下的全部文件以及文件夹
+String [] arr =f.list(new FilenameFilter()
+{
+	public boolean accept(File dir,String name)
+	{
+		return name.endswith(".bmp");
+	}
+});//列出当前目录下后缀名为bmp的文件
+
+File dir = new File("c:\\");
+File [] files = dir.listFiles();
+for(File f : files)
+{
+	System.out.println(f.getName()+"::"+f.length());
+}
+//列出指定目录下文件或者文件夹，包括子目录中的内容，带层级
+import java.io.*
+
+class FileDemo3
+{
+	public statci void main(String [] args)
+	{
+		File dir = new File("d:\\java0212")
+		showDir(dir);
+	}
+	public static void showDir(File dir,int level)
+	{
+		System.out.println(dir);
+		level++;
+		File[] files = dir.listFiles();
+		for(int x = 0;x<file.length;x++)
+		{
+			if (files[x].isDirectory())
+				showDir(files[x]);
+			else 
+				System.out.println(files[x]);
+		}
+	}
+	public static String getLevel(int level)//让打印带上层级
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append(|--)
+		for (int x=0;x<level;x++)
+			sb.insert(0,"|  ");
+		return sb.toString;
+	}
+}
+
+递归函数：
+1.限定条件
+2.注意次数
+
+//将一个指定目录下的java文件的绝对路径，存储到一个文本文件中
+import java.io.*
+import java.util.*
+class JavaFileList
+{
+	public static void main(string[] args)
+	{
+		File dir = new File("d:\\java");
+		List<File> list = new Arraylist<File>();
+		fileTolist(dir,list);
+		File file = new File(dir,"javalist.txt");
+		writetoFile(list,file.toString());
+	}
+	public static void fileTolist(File dir,List<File>file)
+	{
+		File[] files = dir.listFiles();
+		for(File file :files)
+		{
+			if(file.isDirectory())
+				fileTolist(file,list)
+			else 
+			{
+				if file.getName().endsWith(".java");
+					list.add(file);
+			}
+		}
+	}
+	public static void writetoFile(List<File>list,String javaListFile) throws IOException
+	{
+		bufferedWriter bufw = null;
+		try
+		{
+			bufw = new BufferedWriter(new FileWriter(javaListFile));
+			for(File f : List)
+			{
+				String path = f.getAbsolutePath();
+				bufw.write(path);
+				bufw.newLine();
+				bufw.flush();
+			}
+		}
+		catch(IOException)
+		{
+			throw e;
+		}
+		finally
+		{
+			try 
+			{
+				if(bufw!=null)
+					bufw.close();
+			}
+			catch (IOException)
+			{
+			throw e;
+			}
+		}
+	}
+	
+}
+
+//Properities是hashtable的子类
+也就是它具备了map集合的特点，而且它里面存储的键值对都是字符串
+是集合中和IO技术结合的容器
+该对象的特点：可以用于键值对形式的配置文件
+Properities加载的文件一般有固定格式：key=value
+Properities prop = new Properities();
+prop.setProperty("zhangsan","30");
+String value = prop.getProgerty("zhangsan")
+set<String> names = prop.stringPropertyNames();
+for(String s :names)
+	System.out.println(s+":"+prop.getProgerty(s));
+	
+
+Properities  prop = new Properities();
+FileInputStream fis = new FileInputStream("info.txt");
+prop.load(fis);//将流中的数据加载进集合
+prop.setProperty("Wangwu","39");
+FileOutputStream fos new FileOutputStream(info.txt);
+prop.store(fos,"haha");
+fos.close()
+fis.close();
+
+字节打印流PrintStream：
+
+构造函数可以接受的对象：
+file对象File
+字符串路径，String
+字节输出流：OutputStream
+
+字符打印流：PrintWriter
+构造函数可以接受的对象：
+file对象File
+字符串路径，String
+字节输出流：OutputStream
+字符输出流：Writer
+
+BufferedReader bufr = new BufferedReader(new InputStreamReader(System.in));
+PrintWriter out = new PrintWriter(new FileWriter("a.txt"),true);
+String line = null;
+while((line = bufr.readLine())!=null)
+{
+	if("over".equals(line))
+		break;
+	out.println(line.toUpperCase());//打印流中的println方法可以自动刷新
+}
+out.close();
+bufr.close();
+=================================================
+多个源对应一个目的
+	--合并流
+	
+Vector<FileInputStream>v = new Vector<FileInputStream>();
+v.add(new FileInputStream("c:\\1.txt"));
+v.add(new FileInputStream("c:\\2.txt"));
+v.add(new FileInputStream("c:\\3.txt"));
+Enumeration<FileOutputStream>en = v.elements();
+SequenceInputStream sis = new SequenceInputStream(en);
+FileOutputStream fos = new FileOutputStream("c:\\4.txt"); 
+byte[] buf = new byte[1024];
+int len = 0;
+while((len = sis.read(buf))!=-1)
+	{
+		fos.write(buf,0,len);
+	}
+fos.close();
+sis.close();
+
+==========================================================
+切割文件
+================================
+class splitDemo
+{
+	public static void main(String[] args)
+	{
+		splitFile();
+	}
+	public static void merge()
+	{
+		ArrayList<FileInputStream>al = new ArrayList<FileInputStream>();
+		for(int x = 1;x<=3;x++)
+		{al.add(new FileInputStream("c:\\"+x+".part"))};
+		final Iterator it <FileInputStream> = al.iterator();
+		Enumeration<FileInputStream> en = new Enumeration<FileInputStream>()
+		{
+			public boolean hasMoreElements()
+			{
+				return it.hasNext();
+			}
+			public FileInputStream nextElement()
+			{
+				return it.next();
+			}
+		};
+		SequenceInputStream sis = new SequenceInputStream(en);
+		FileOutputStream fos = new FileOutputStream("c:\\0.mp3");
+		byte[] buf = new byte[1024];
+		int len = 0;
+		while(len = sis.read(buf) )!=-1)
+		{
+				fos.write(buf,0,len);
+		}
+		fos.close();
+		sis.close();
+	}
+	public static void splitFile()
+	{
+		FileInputStream fis = new FileInputStream("c:\\a.mp3");
+		FileOutputStream fos = null;
+		byte[] buf = new byte[1024*1024];
+		int len = 0;
+		int count = 1; 
+		while((len = fis.read(buf))!= -1)
+			{
+				fos = new FileOutputStream("c:\\"+(count++) +".part");
+				fos.write(buf,0,len)
+				fos.close();
+			}
+	fis.close();
+	}
+}
+================================================================================================
+对象的序列化
+================================================
+ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(obj.txt));
+oos.writeObject(new Person("lisi",39));
+oos.close()
+其中Person类要implements Serializable以保证可以实现序列化
+ObjectInputStream ois = new ObjectInputStream(new FileInputStream("obj.txt"));
+Person p = (Person)ois.readObject();
+ois.close();
+在类中可以加上public static final long serialVersionUID =42L;使用自己确定的唯一UID，序列化
+其中静态成员不能被序列化
+transient修饰也可以保证不能被序列化
+
